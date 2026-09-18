@@ -8,9 +8,9 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Admin'
         USER = 'user', 'User'
-    
 
-
+    name = models.CharField(max_length=150, default='')
+    surname = models.CharField(max_length=150, default='')
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
