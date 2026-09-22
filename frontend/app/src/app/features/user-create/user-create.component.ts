@@ -35,44 +35,44 @@ export class UserCreateComponent {
   }
 
   onSubmit(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
+  this.successMessage = '';
+  this.errorMessage = '';
 
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.submitting = true;
-
-    this.auth.createUser(this.form.getRawValue()).subscribe({
-      next: (user) => {
-        this.submitting = false;
-        this.successMessage = `User "${user.username}" created successfully.`;
-        this.form.reset();
-      },
-      error: (err) => {
-        this.submitting = false;
-
-        if (err.status === 400 && err.error) {
-          if (err.error.detail) {
-            this.errorMessage = err.error.detail;
-          } else if (err.error.username) {
-            const userErr = err.error.username;
-            this.errorMessage = Array.isArray(userErr) ? userErr[0] : userErr;
-          } else {
-            const firstField = Object.keys(err.error)[0];
-            const fieldVal = err.error[firstField];
-            this.errorMessage = Array.isArray(fieldVal) ? fieldVal[0] : fieldVal;
-          }
-        } else if (err.status === 403) {
-          this.errorMessage = 'You do not have permission to create users.';
-        } else {
-          this.errorMessage = 'An error occurred while creating the user.';
-        }
-      },
-    });
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.submitting = true;
+
+  this.auth.createUser(this.form.getRawValue()).subscribe({
+    next: (user) => {
+      this.submitting = false;
+      this.successMessage = `User "${user.username}" created successfully.`;
+      this.form.reset();
+    },
+    error: (err) => {
+      this.submitting = false;
+
+      if (err.status === 400 && err.error) {
+        if (err.error.username) {
+          alert('Username already exists, please use a different username');
+          this.form.reset();
+        } else if (err.error.detail) {
+          this.errorMessage = err.error.detail;
+        } else {
+          const firstField = Object.keys(err.error)[0];
+          const fieldVal = err.error[firstField];
+          this.errorMessage = Array.isArray(fieldVal) ? fieldVal[0] : fieldVal;
+        }
+      } else if (err.status === 403) {
+        this.errorMessage = 'You do not have permission to create users.';
+      } else {
+        this.errorMessage = 'An error occurred while creating the user.';
+      }
+    },
+  });
+}
 
   goHome(): void {
     this.router.navigate(['/admin-welcome']);

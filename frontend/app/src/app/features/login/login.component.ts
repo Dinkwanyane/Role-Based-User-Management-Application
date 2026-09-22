@@ -21,19 +21,24 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    this.errorMessage = '';
-
-    this.auth.login(this.username, this.password).subscribe({
-      next: (user) => {
-        if (user.role === 'admin') {
-          this.router.navigate(['/admin-welcome']);
-        } else {
-          this.router.navigate(['/user-welcome']);
-        }
-      },
-      error: () => {
-        this.errorMessage = 'Invalid username or password.';
+  this.auth.login(this.username, this.password).subscribe({
+    next: (user) => {
+      if (user.role === 'admin') {
+        this.router.navigate(['/admin-welcome']);
+      } else {
+        this.router.navigate(['/user-welcome']);
       }
-    });
-  }
+    },
+    error: () => {
+      alert('Incorrect credentials, user does not exist');
+      this.username = '';
+      this.password = '';
+      this.router.navigate(['/login']);
+      window.location.reload();
+    }
+  });
+}
+
+
+
 }

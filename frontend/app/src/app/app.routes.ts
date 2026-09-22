@@ -5,6 +5,7 @@ import { UserWelcomeComponent } from './features/user-welcome/user-welcome.compo
 import { UserCreateComponent } from './features/user-create/user-create.component';
 import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
+import { userGuard } from './core/auth/user.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,7 +17,7 @@ export const routes: Routes = [
   {
     path: 'user-welcome',
     component: UserWelcomeComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, userGuard],
   },
   {
     path: 'user-create',

@@ -11,6 +11,7 @@ export const adminGuard: CanActivateFn = () => {
     if (user?.role === 'admin') {
       return true;
     }
+    alert('Not authorized');
     router.navigate(['/user-welcome']);
     return false;
   };
