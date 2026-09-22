@@ -1,23 +1,20 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 
-from .serializers import UserSerializer
+from .models import User
+from .permissions import IsAdmin
+from .serializers import UserSerializer, UserCreateSerializer
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class CsrfView(APIView):
-    """
-    GET /api/auth/csrf/
-    Angular calls this once on app startup so the browser receives
-    a csrftoken cookie before any POST request is made.
-    """
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -25,10 +22,6 @@ class CsrfView(APIView):
 
 
 class LoginView(APIView):
-    """
-    POST /api/auth/login/
-    Public. Authenticates and starts a session.
-    """
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -54,10 +47,6 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    """
-    POST /api/auth/logout/
-    Authenticated only. Ends the session.
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -66,12 +55,30 @@ class LogoutView(APIView):
 
 
 class MeView(APIView):
-    """
-    GET /api/auth/me/
-    Authenticated only. Returns the current user's details.
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+class UserListCreateView(ListCreateAPIView):
+    permission_classes = [IsAdmin]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return UserCreateSerializer
+        return UserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(role=User.Role.USER)
+
+
+
+
+
+
+
+
+
+
 

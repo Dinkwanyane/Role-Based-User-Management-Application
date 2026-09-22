@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-# Create your models here.
 
-# create a custom user model by extending the AbstractUser class
+from .managers import UserManager
+
+
 class User(AbstractUser):
 
     class Role(models.TextChoices):
@@ -16,6 +17,12 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.USER
     )
+    REQUIRED_FIELDS = ['name', 'surname']
+    objects = UserManager()
 
     def __str__(self):
         return self.username
+
+
+
+
