@@ -18,6 +18,7 @@ export const routes: Routes = [
     path: 'user-welcome',
     component: UserWelcomeComponent,
     canActivate: [authGuard, userGuard],
+    
   },
   {
     path: 'user-create',

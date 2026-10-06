@@ -6,52 +6,75 @@ import { AuthService } from '../../core/auth/auth.service';
   selector: 'app-admin-welcome',
   standalone: true,
   template: `
-    <div class="p-8">
-      <h1 class="text-xl mb-4">
-        Hello Administrator: {{ auth.currentUser()?.name }} {{ auth.currentUser()?.surname }}
-      </h1>
+    <div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4 sm:p-6">
 
-      <div class="mb-6">
-        <button (click)="goToCreateUser()" class="bg-blue-600 text-white px-4 py-2 rounded mr-2">
-          Create User
-        </button>
-        <button (click)="auth.logout()" class="bg-gray-600 text-white px-4 py-2 rounded">
+      <header class="max-w-4xl w-full mx-auto flex justify-between items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 shadow-lg mb-6">
+        <h1 class="text-white font-semibold text-lg">
+          Hello Administrator: {{ auth.currentUser()?.name }} {{ auth.currentUser()?.surname }}
+        </h1>
+        <button
+          type="button"
+          (click)="auth.logout()"
+          class="px-4 py-2 bg-red-500/80 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+        >
           Logout
         </button>
-      </div>
+      </header>
 
-      <h2 class="text-lg font-bold mb-4">Registered Users</h2>
+      <main class="max-w-4xl w-full mx-auto">
+        <div class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/50">
 
-      <table class="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Username</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Name</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Surname</th>
-            <th class="border border-gray-300 px-4 py-2 text-left">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (user of regularUsers; track user.id) {
-            <tr>
-              <td class="border border-gray-300 px-4 py-2">{{ user.id }}</td>
-              <td class="border border-gray-300 px-4 py-2">{{ user.username }}</td>
-              <td class="border border-gray-300 px-4 py-2">{{ user.name }}</td>
-              <td class="border border-gray-300 px-4 py-2">{{ user.surname }}</td>
-              <td class="border border-gray-300 px-4 py-2">{{ user.role }}</td>
-            </tr>
-          }
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-extrabold text-gray-800 tracking-tight">Registered Users</h2>
+            <button
+              type="button"
+              (click)="goToCreateUser()"
+              class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-semibold rounded-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              + Create User
+            </button>
+          </div>
 
-          @if (regularUsers.length === 0) {
-            <tr>
-              <td colspan="5" class="border border-gray-300 px-4 py-4 text-center text-gray-500">
-                No standard users found.
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          <div class="overflow-x-auto rounded-xl border border-gray-200">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200">
+                  <th class="px-4 py-3 text-left font-semibold text-gray-600">ID</th>
+                  <th class="px-4 py-3 text-left font-semibold text-gray-600">Username</th>
+                  <th class="px-4 py-3 text-left font-semibold text-gray-600">Name</th>
+                  <th class="px-4 py-3 text-left font-semibold text-gray-600">Surname</th>
+                  <th class="px-4 py-3 text-left font-semibold text-gray-600">Role</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (user of regularUsers; track user.id) {
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-4 py-3 text-gray-700">{{ user.id }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ user.username }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ user.name }}</td>
+                    <td class="px-4 py-3 text-gray-700">{{ user.surname }}</td>
+                    <td class="px-4 py-3">
+                      <span class="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">
+                        {{ user.role }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+
+                @if (regularUsers.length === 0) {
+                  <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                      No standard users found.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </main>
+
     </div>
   `,
 })
@@ -61,7 +84,7 @@ export class AdminWelcomeComponent implements OnInit {
   constructor(
     public auth: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -75,24 +98,25 @@ export class AdminWelcomeComponent implements OnInit {
     }
   }
 
-loadUsers(): void {
-  this.auth.getUsers().subscribe({
-    next: (users: any[]) => {
-      this.regularUsers = users.filter(
-        (user) => user.role?.toLowerCase() !== 'admin'
-      );
-      console.log('BEFORE detectChanges, regularUsers:', this.regularUsers);
-      this.cdr.detectChanges();
-      console.log('AFTER detectChanges called');
-    },
-    error: (error) => {
-      console.error('Error loading users:', error);
-    },
-  });
-}
+  loadUsers(): void {
+    this.auth.getUsers().subscribe({
+      next: (users: any[]) => {
+        this.regularUsers = users.filter(
+          (user) => user.role?.toLowerCase() !== 'admin'
+        );
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+      },
+    });
+  }
+
   goToCreateUser(): void {
     this.router.navigate(['/user-create']);
   }
 }
+
+
 
 
